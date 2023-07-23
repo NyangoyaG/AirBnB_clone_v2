@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
-# Install Nginx
+#Install nginx if not istalled
 sudo apt-get -y update
 sudo apt-get -y install nginx
 
-# creation folders
+# Create folders
 mkdir -p /data/
 mkdir -p /data/web_static/
 mkdir -p /data/web_static/releases/
 mkdir -p /data/web_static/shared/
 mkdir -p /data/web_static/releases/test/
+
+#Create a fake file
 touch /data/web_static/releases/test/index.html
 echo "<html>
   <head>
@@ -17,25 +19,9 @@ echo "<html>
     Holberton School
   </body>
 </html>" >> /data/web_static/releases/test/index.html
-
-ln -sf /data/web_static/releases/test/
-index.html
-
-ln -sf /data/web_static/releases/test/ /data/web_static/current
-
-chown -R ubuntu: /data/
-
-print %s "server {
-	listen 80 default_server;
-	listen [::]:80 default_server;
-	root /var/www/html;
-	server_name _;
-	add_header X-Served-By $HOSTNAME;
-
-	location /hbnb_static/ {
-		alias /data/web_static/current/hbnb_static/;
-		index index.html;
-	}
-}" > /etc/nginx/sites-enabled/default
-
-service nginx restart
+sudo ln -sf /data/web_static/releases/test/ /data/web_static/current
+sudo chown -R ubuntu:ubuntu /data/
+myc="\n\tlocation \/hbnb_static\/ {\n\t\talias \/data\/web_static\/current\/\;\n\t}\n"
+st="server {"
+sudo sed -i "s/^$st/$st$myc/" /etc/nginx/sites-enabled/default
+sudo service nginx start
